@@ -15,7 +15,8 @@ app.get('/', (req,res) => {
     res.sendFile(path.join(__dirname, '/client/index.html'));
 });
 
-const messages = [];
+let users =[];
+let messages = [];
 
 
 const server = app.listen(process.env.PORT || 8000, () => {
@@ -34,7 +35,22 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('message', message);
     });
 
-    socket.on('disconnect', () => { console.log('Oh, socket ' + socket.id + ' has left') });
+    socket.on('join', (userName) => {
+        users.push({ name: userName, id: socket.id});
+
+        socket.broadcast.emit('message', {author: 'chatbot', content: `${userName} has joined the conversation!`});
+    })
+
+    socket.on('disconnect', () => {
+        console.log('Oh, socket ' + socket.id + ' has left');
+
+        const user = users.find(user => user.id === socket.id);
+
+        if(user){
+            socket.broadcast.emit('message', {author: 'chatbot', content: `${user.name} has left the conversation  :(`});
+            users = users.filter(user => user.id !== socket.id);
+        }
+    });
 
     console.log('I\'ve added a listener on a message event \n');
 

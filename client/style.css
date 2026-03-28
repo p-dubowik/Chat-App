@@ -90,6 +90,8 @@ p {
   text-align: right;
 }
 
+
+
 .message__content {
   background: rgb(68, 68, 68);
   border: none;
@@ -102,6 +104,10 @@ p {
 
 .message--self .message__content {
   background: #3498db;
+}
+
+.message--bot .message__content {
+    font-style: italic;
 }
 
 .show {
