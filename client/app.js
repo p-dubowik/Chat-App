@@ -7,6 +7,14 @@ const addMessageForm = document.getElementById('add-messages-form');
 const userNameInput = document.getElementById('username');
 const messageContentInput = document.getElementById('message-content');
 
+//initialize socket
+const socket = io();
+
+//Add event listener to 'message' event with addMessage as callback function
+socket.on('message', ({ author, content }) => addMessage(author, content));
+
+
+
 const login = e => {
     e.preventDefault();
 
@@ -39,16 +47,18 @@ const addMessage = (author, content) => {
 const sendMessage = e => {
     e.preventDefault();
 
+    let messageContent = messageContentInput.value;
+
     if(!messageContentInput.value){
         alert('Message Content Empty');
         return;
     }
-
-    addMessage(userName, messageContentInput.value);
-
-    messageContentInput.value = '';
+    else {
+        addMessage(userName, messageContent);
+        socket.emit('message', { author: userName, content: messageContent });
+        messageContentInput.value = '';
+    }
 }
-
 
 
 
